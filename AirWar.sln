@@ -5,6 +5,11 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirWar", "AirWar\AirWar.csproj", "{06DA9F07-ACA6-43CB-A8A3-C543E2F3B8FA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{4E5F5B3D-4E83-40D4-8969-C4E4386911F4}"
+	ProjectSection(SolutionItems) = preProject
+		mapa.png = mapa.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
