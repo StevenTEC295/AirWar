@@ -6,11 +6,18 @@
         xmlns:local="clr-namespace:AirWar"
         mc:Ignorable="d"
         Title="AirWar" Height="650" Width="1000">
-    <Grid>
-        <Image Source="C:\Users\steve\OneDrive - Estudiantes ITCR\TEC\II Semestre\Algoritmos y Estructuras de Datos 1\Proyectos\Proyecto3\AirWar\mapa.png" 
-               Stretch="Fill"/>
-        <Label x:Name="TimerLabel" Content="00:00" FontSize="24" Foreground="White" 
-       HorizontalAlignment="Right" VerticalAlignment="Top" 
-       Margin="10"/>
-    </Grid>
+	<Grid>
+		<!-- Imagen de fondo -->
+		<Image x:Name="FondoMapa" Source="C:\Users\Usuario\Desktop\Datos 1\AirWar\mapa.png"
+	     Stretch="Fill"/>
+
+		<!-- Canvas  -->
+		<Canvas x:Name="GrafoCanvas" Background="Transparent"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+		<!-- Label del temporizador -->
+		<Label x:Name="TimerLabel" Content="00:00" FontSize="24" Foreground="White"
+               HorizontalAlignment="Right" VerticalAlignment="Top"
+               Margin="10"/>
+	</Grid>
 </Window>
