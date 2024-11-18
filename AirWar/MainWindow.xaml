@@ -8,7 +8,7 @@
         Title="AirWar" Height="650" Width="1000">
 	<Grid>
 		<!-- Imagen de fondo -->
-		<Image x:Name="FondoMapa" Source="C:\Users\Usuario\Desktop\Datos 1\AirWar\mapa.png"
+        <Image x:Name="FondoMapa" Source="C:\Users\steve\OneDrive - Estudiantes ITCR\TEC\II Semestre\Algoritmos y Estructuras de Datos 1\Proyectos\Proyecto3\AirWar\mapa.png"
 	     Stretch="Fill"/>
 
 		<!-- Canvas  -->
@@ -19,5 +19,13 @@
 		<Label x:Name="TimerLabel" Content="00:00" FontSize="24" Foreground="White"
                HorizontalAlignment="Right" VerticalAlignment="Top"
                Margin="10"/>
-	</Grid>
+        <Canvas Name="GameCanvas" Background="Transparent" 
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <!-- Arma -->
+            <Rectangle Name="Arma" Width="50" Height="20" Fill="Black" />
+            <!-- Bala -->
+            <Ellipse Name="Bala" Width="10" Height="10" Fill="Red" Visibility="Hidden" />
+        </Canvas>
+
+    </Grid>
 </Window>

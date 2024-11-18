@@ -26,12 +26,80 @@ namespace AirWar
         private Generador _generador = new Generador(); // Crea una instancia de la clase Generador para generar grafos.
         private Grafo _grafo;
 
+        private DispatcherTimer movimientoArmaTimer;
+        private double armaVelocidad = 5; // Velocidad de movimiento
+        private bool moviendoDerecha = true;
+
         public MainWindow()
         {
             InitializeComponent();
             IniciarCuentaRegresiva();
-            Loaded += MainWindow_Loaded;
+            
+
+            // Posicionar el arma al cargar la ventana
+            this.Loaded += MainWindow_Loaded;
+            this.SizeChanged += MainWindow_SizeChanged; // Reposicionar si cambia el tamaño de la ventana
+
+            // Configurar el temporizador para el movimiento del arma
+            movimientoArmaTimer = new DispatcherTimer();
+            movimientoArmaTimer.Interval = TimeSpan.FromMilliseconds(20);
+            movimientoArmaTimer.Tick += MoverArma;
+            movimientoArmaTimer.Start();
+
+            // Manejar el clic para disparar
+            this.MouseLeftButtonDown += DispararBala;
         }
+
+        private void MoverArma(object sender, EventArgs e)
+        {
+            // Obtener la posición actual del arma
+            double posicionActual = Canvas.GetLeft(Arma);
+
+            // Verificar límites
+            if (posicionActual <= 0)
+                moviendoDerecha = true;
+            else if (posicionActual >= GameCanvas.ActualWidth - Arma.Width)
+                moviendoDerecha = false;
+
+            // Mover el arma
+            double nuevaPosicion = moviendoDerecha ? posicionActual + armaVelocidad : posicionActual - armaVelocidad;
+            Canvas.SetLeft(Arma, nuevaPosicion);
+        }
+
+        private void DispararBala(object sender, RoutedEventArgs e)
+        {
+            // Configurar la posición inicial de la bala
+            double posicionArmaX = Canvas.GetLeft(Arma) + Arma.Width / 2 - Bala.Width / 2;
+            double posicionArmaY = Canvas.GetTop(Arma) - Bala.Height;
+
+            Canvas.SetLeft(Bala, posicionArmaX);
+            Canvas.SetTop(Bala, posicionArmaY);
+
+            Bala.Visibility = Visibility.Visible;
+
+            // Mover la bala hacia arriba
+            DispatcherTimer balaTimer = new DispatcherTimer();
+            balaTimer.Interval = TimeSpan.FromMilliseconds(10);
+            balaTimer.Tick += (s, args) =>
+            {
+                double posicionBalaY = Canvas.GetTop(Bala);
+
+                // Verificar si la bala sale de la pantalla
+                if (posicionBalaY <= 0)
+                {
+                    balaTimer.Stop();
+                    Bala.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    // Mover la bala hacia arriba
+                    Canvas.SetTop(Bala, posicionBalaY - 10);
+                }
+            };
+
+            balaTimer.Start();
+        }
+
 
         private void IniciarCuentaRegresiva()
         {
@@ -64,8 +132,22 @@ namespace AirWar
             _grafo = _generador.GenerarGrafo(4, 3, 8); // Genera un grafo con 4 aeropuertos, 3 portaaviones y 8 rutas.
                                                        // (Valores ajustables que son los que se iteran en la clase generador)
             DibujarGrafo();
+            PosicionarArma();
         }
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            PosicionarArma();
+        }
+        private void PosicionarArma()
+        {
+            // Asegurar que el arma esté al centro en la parte inferior
+            double armaX = (GameCanvas.ActualWidth - Arma.Width) / 2; // Centrar horizontalmente
+            double armaY = GameCanvas.ActualHeight - Arma.Height - 10; // Colocar cerca del borde inferior
 
+            // Actualizar posición del arma
+            Canvas.SetLeft(Arma, armaX);
+            Canvas.SetTop(Arma, armaY);
+        }
         private void DibujarGrafo()
         {
             Random random = new Random();
@@ -98,8 +180,8 @@ namespace AirWar
                     Width = 30,
                     Height = 30,
                     Source = nodo.EsAeropuerto
-                        ? new BitmapImage(new Uri(@"C:\Users\Usuario\Desktop\Datos 1\AirWar\AirWar\Aeropuerto.png"))
-                        : new BitmapImage(new Uri(@"C:\Users\Usuario\Desktop\Datos 1\AirWar\AirWar\Portaaviones.png"))
+                        ? new BitmapImage(new Uri(@"C:\Users\steve\OneDrive - Estudiantes ITCR\TEC\II Semestre\Algoritmos y Estructuras de Datos 1\Proyectos\Proyecto3\AirWar\AirWar\Aeropuerto.png"))
+                        : new BitmapImage(new Uri(@"C:\Users\steve\OneDrive - Estudiantes ITCR\TEC\II Semestre\Algoritmos y Estructuras de Datos 1\Proyectos\Proyecto3\AirWar\AirWar\Portaaviones.png"))
                 };
 
                 Canvas.SetLeft(imagenNodo, x);
@@ -134,6 +216,7 @@ namespace AirWar
                 }
             }
         }
+        
 
         // Método que verifica que se cumple con la distancia mínima entre nodos.
         private bool DistanciaMinima(Point nuevoPunto, Dictionary<Nodo, Point> posicionesExistentes, int distanciaMinima)
