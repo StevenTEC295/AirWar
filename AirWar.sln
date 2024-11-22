@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{4E5F5B3D-4E83-40D4-8969-C4E4386911F4}"
 	ProjectSection(SolutionItems) = preProject
 		AirWar\Aeropuerto.png = AirWar\Aeropuerto.png
+		..\..\..\..\..\..\..\Downloads\avion.png = ..\..\..\..\..\..\..\Downloads\avion.png
 		mapa.png = mapa.png
 		AirWar\Portaaviones.png = AirWar\Portaaviones.png
 	EndProjectSection

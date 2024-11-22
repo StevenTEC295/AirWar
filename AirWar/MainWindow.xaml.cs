@@ -30,11 +30,14 @@ namespace AirWar
         private double armaVelocidad = 5; // Velocidad de movimiento
         private bool moviendoDerecha = true;
 
+        //Timer para generar aviones en los aeropuertos
+        private DispatcherTimer timerGenerarAviones;
+        private TimeSpan intervaloGeneracionAviones = TimeSpan.FromSeconds(2);
         public MainWindow()
         {
             InitializeComponent();
             IniciarCuentaRegresiva();
-            
+            IniciarGeneracionAviones();
 
             // Posicionar el arma al cargar la ventana
             this.Loaded += MainWindow_Loaded;
@@ -48,6 +51,22 @@ namespace AirWar
 
             // Manejar el clic para disparar
             this.MouseLeftButtonDown += DispararBala;
+        }
+        private void IniciarGeneracionAviones()
+        {
+            timerGenerarAviones = new DispatcherTimer
+            {
+                Interval = intervaloGeneracionAviones
+            };
+            timerGenerarAviones.Tick += TimerGenerarAviones_Tick;
+            timerGenerarAviones.Start();
+        }
+        private void TimerGenerarAviones_Tick(object sender, EventArgs e)
+        {
+            foreach (var nodo in _grafo.Nodos)
+            {
+                nodo.ConstruirAviones(GrafoCanvas); // Pasar el Canvas al método para dibujar los aviones.
+            }
         }
 
         private void MoverArma(object sender, EventArgs e)
@@ -153,19 +172,17 @@ namespace AirWar
             Random random = new Random();
             Dictionary<Nodo, Point> posicionesNodos = new Dictionary<Nodo, Point>(); // Almacena las posiciones de cada nodo en el grafo.
             int distanciaMinima = 100; // Define la distancia mínima entre nodos en píxeles
-                                       // para evitar interrupciones visuales por demasiada cercania
 
             foreach (var nodo in _grafo.Nodos) // Itera por cada nodo en el grafo.
             {
-                //Tamaño de los nodos
+                // Tamaño de los nodos
                 int maxX = (int)GrafoCanvas.ActualWidth - 40;
                 int maxY = (int)GrafoCanvas.ActualHeight - 40;
 
                 double x, y;
                 bool esPosicionValida;
 
-                // Encuentra una posición válida para el nodo,
-                // verificando que cumpla las restricciones de distancia y zona por color.
+                // Encuentra una posición válida para el nodo
                 do
                 {
                     x = random.Next(20, maxX); // Genera una posición x aleatoria.
@@ -184,14 +201,19 @@ namespace AirWar
                         : new BitmapImage(new Uri(@"C:\Users\steve\OneDrive - Estudiantes ITCR\TEC\II Semestre\Algoritmos y Estructuras de Datos 1\Proyectos\Proyecto3\AirWar\AirWar\Portaaviones.png"))
                 };
 
+                // Asociar la imagen al nodo (esta línea es nueva)
+                nodo.ImagenNodo = imagenNodo;
+
+                // Posicionar la imagen en el Canvas
                 Canvas.SetLeft(imagenNodo, x);
                 Canvas.SetTop(imagenNodo, y);
                 GrafoCanvas.Children.Add(imagenNodo);
 
+                // Registrar la posición del nodo
                 posicionesNodos[nodo] = new Point(x + 15, y + 15);
             }
 
-            // Dibuja las rutas entre los nodos adyacentes.
+            // Dibuja las rutas entre los nodos adyacentes
             foreach (var nodo in _grafo.Nodos)
             {
                 foreach (var adyacente in nodo.Adyacentes) // Itera por cada nodo adyacente.
@@ -216,7 +238,8 @@ namespace AirWar
                 }
             }
         }
-        
+
+
 
         // Método que verifica que se cumple con la distancia mínima entre nodos.
         private bool DistanciaMinima(Point nuevoPunto, Dictionary<Nodo, Point> posicionesExistentes, int distanciaMinima)
