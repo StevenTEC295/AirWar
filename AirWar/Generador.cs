@@ -22,21 +22,21 @@ namespace AirWar
             }
 
             // Creación de nodos que son portaaviones
-            // ("Mismo" funcionamiento que aeropuertos)
             for (int i = 0; i < numPortaaviones; i++)
             {
                 Nodo portaavion = new Nodo($"Portaaviones_{i}", false);
                 grafo.Nodos.Add(portaavion);
             }
 
-            // Generación de las rutas del grafo
+            // Generación de las rutas del grafo con pesos
             for (int i = 0; i < grafo.Nodos.Count; i++) // Itera todos los nodos para crear rutas entre ellos.
             {
                 Nodo nodo = grafo.Nodos[i]; // Se obtiene el nodo actual.
                 Nodo otroNodo = grafo.Nodos[(i + 1) % grafo.Nodos.Count]; // Selecciona otro nodo para continuar con la lista.
                 if (!nodo.Adyacentes.Contains(otroNodo)) // Verifica que aún no exista una ruta entre los nodos.
                 {
-                    grafo.AgregarRuta(nodo, otroNodo); // Agrega la ruta entre los nodos.
+                    double peso = CalcularPeso(nodo, otroNodo); // Calcular el peso de la ruta
+                    grafo.AgregarRuta(nodo, otroNodo, peso); // Agrega la ruta entre los nodos con el peso.
                 }
             }
 
@@ -50,11 +50,39 @@ namespace AirWar
                 // Para que no se dupliquen conexiones
                 if (origen != destino && !origen.Adyacentes.Contains(destino)) // Verifica que origen y destino sean diferentes y que no haya conexión previa.
                 {
-                    grafo.AgregarRuta(origen, destino);
+                    double peso = CalcularPeso(origen, destino); // Calcular el peso de la ruta
+                    grafo.AgregarRuta(origen, destino, peso); // Agregar la ruta con el peso calculado
                     conexionesActuales++;
                 }
             }
             return grafo;
         }
+
+        // Método para calcular el peso de la ruta
+ 
+        private double CalcularPeso(Nodo origen, Nodo destino)
+        {
+            // Distancia entre nodos (aleatoria entre 1 y 5)
+            double distancia = _random.Next(1, 5);
+            Console.WriteLine($"Distancia asignada: {distancia}");
+
+            // Costo adicional por tipo de destino (portaavión es más caro)
+            double costoDestino = destino.EsAeropuerto ? 1.0 : 9.0;
+            Console.WriteLine($"Costo del destino (1.0 para aeropuerto, 9.0 para portaavión): {costoDestino}");
+
+            // Determinar si es una ruta interoceánica (costo adicional)
+            bool esInteroceanica = !origen.EsAeropuerto || !destino.EsAeropuerto;
+            double costoRuta = esInteroceanica ? 3.0 : 1.0;
+            Console.WriteLine($"Costo de la ruta (3.0 si es interoceánica, 1.0 si no): {costoRuta}");
+
+            // Calcular el peso total
+            double pesoTotal = distancia * costoDestino * costoRuta;
+            Console.WriteLine($"Peso total calculado: {pesoTotal}");
+
+            return pesoTotal;
+        }
+
+
+
     }
 }

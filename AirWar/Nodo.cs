@@ -20,9 +20,9 @@ namespace AirWar
 
         private Random _random = new Random();
         public Image ImagenNodo { get; set; } // Representa la imagen del nodo en el canvas.
-    
 
-    public Nodo(string nombre, bool esAeropuerto)
+
+        public Nodo(string nombre, bool esAeropuerto)
         {
             Nombre = nombre;
             EsAeropuerto = esAeropuerto; // Se utiliza para determinar el tipo de nodo y
@@ -47,7 +47,7 @@ namespace AirWar
             {
                 Width = 20,
                 Height = 20,
-                Source = new BitmapImage(new Uri(@"C:\Users\steve\Downloads\avion.png")) // Ruta de la imagen del avión
+                Source = new BitmapImage(new Uri(@"C:\Users\Usuario\Pictures\Screenshots\Captura de pantalla 2024-11-23 232817.png")) // Ruta de la imagen del avión
             };
 
             // Posicionar el avión centrado sobre el nodo (aeropuerto)

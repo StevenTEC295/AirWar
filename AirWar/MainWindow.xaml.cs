@@ -172,6 +172,7 @@ namespace AirWar
             Random random = new Random();
             Dictionary<Nodo, Point> posicionesNodos = new Dictionary<Nodo, Point>(); // Almacena las posiciones de cada nodo en el grafo.
             int distanciaMinima = 100; // Define la distancia mínima entre nodos en píxeles
+                                       // para evitar interrupciones visuales por demasiada cercania
 
             foreach (var nodo in _grafo.Nodos) // Itera por cada nodo en el grafo.
             {
@@ -182,7 +183,8 @@ namespace AirWar
                 double x, y;
                 bool esPosicionValida;
 
-                // Encuentra una posición válida para el nodo
+                // Encuentra una posición válida para el nodo,
+                // verificando que cumpla las restricciones de distancia y zona por color.
                 do
                 {
                     x = random.Next(20, maxX); // Genera una posición x aleatoria.
@@ -197,48 +199,62 @@ namespace AirWar
                     Width = 30,
                     Height = 30,
                     Source = nodo.EsAeropuerto
-                        ? new BitmapImage(new Uri(@"C:\Users\steve\OneDrive - Estudiantes ITCR\TEC\II Semestre\Algoritmos y Estructuras de Datos 1\Proyectos\Proyecto3\AirWar\AirWar\Aeropuerto.png"))
-                        : new BitmapImage(new Uri(@"C:\Users\steve\OneDrive - Estudiantes ITCR\TEC\II Semestre\Algoritmos y Estructuras de Datos 1\Proyectos\Proyecto3\AirWar\AirWar\Portaaviones.png"))
+                        ? new BitmapImage(new Uri(@"C:\Users\Usuario\Desktop\Datos 1\AirWar\AirWar\Aeropuerto.png"))
+                        : new BitmapImage(new Uri(@"C:\Users\Usuario\Desktop\Datos 1\AirWar\AirWar\Portaaviones.png"))
                 };
 
-                // Asociar la imagen al nodo (esta línea es nueva)
                 nodo.ImagenNodo = imagenNodo;
 
-                // Posicionar la imagen en el Canvas
                 Canvas.SetLeft(imagenNodo, x);
                 Canvas.SetTop(imagenNodo, y);
                 GrafoCanvas.Children.Add(imagenNodo);
 
-                // Registrar la posición del nodo
-                posicionesNodos[nodo] = new Point(x + 15, y + 15);
+                posicionesNodos[nodo] = new Point(x + 15, y + 15); // Guarda el punto central del nodo.
             }
 
-            // Dibuja las rutas entre los nodos adyacentes
-            foreach (var nodo in _grafo.Nodos)
+            // Dibuja las rutas entre los nodos adyacentes.
+            foreach (var ruta in _grafo.Rutas) // Cambiado para iterar por las rutas del grafo.
             {
-                foreach (var adyacente in nodo.Adyacentes) // Itera por cada nodo adyacente.
+                if (posicionesNodos.ContainsKey(ruta.Origen) && posicionesNodos.ContainsKey(ruta.Destino))
                 {
-                    if (posicionesNodos.ContainsKey(nodo) && posicionesNodos.ContainsKey(adyacente))
+                    Point origen = posicionesNodos[ruta.Origen]; // Obtiene la posición del nodo de origen.
+                    Point destino = posicionesNodos[ruta.Destino]; // Obtiene la posición del nodo destino.
+
+                    // Dibuja la línea que representa la ruta.
+                    Line lineaRuta = new Line
                     {
-                        Point origen = posicionesNodos[nodo]; // Obtiene la posición del nodo de origen.
-                        Point destino = posicionesNodos[adyacente]; // Obtiene la posición del nodo destino.
+                        X1 = origen.X, // Coordenada x del punto inicial de la ruta.
+                        Y1 = origen.Y, // Coordenada y del punto inicial de la ruta.
+                        X2 = destino.X, // Coordenada x del punto final de la ruta.
+                        Y2 = destino.Y, // Coordenada y del punto final de la ruta.
+                        Stroke = Brushes.Black,
+                        StrokeThickness = 1
+                    };
 
-                        Line ruta = new Line
-                        {
-                            X1 = origen.X, // Coordenada x del punto inicial de la ruta.
-                            Y1 = origen.Y, // Coordenada y del punto inicial de la ruta.
-                            X2 = destino.X, // Coordenada x del punto final de la ruta.
-                            Y2 = destino.Y, // Coordenada y del punto final de la ruta.
-                            Stroke = Brushes.Black,
-                            StrokeThickness = 1
-                        };
+                    GrafoCanvas.Children.Add(lineaRuta);
 
-                        GrafoCanvas.Children.Add(ruta);
-                    }
+                    // Calcula el punto medio de la ruta para colocar el peso.
+                    double pesoX = (origen.X + destino.X) / 2;
+                    double pesoY = (origen.Y + destino.Y) / 2;
+
+                    // Crea un TextBlock para mostrar el peso de la ruta.
+                    TextBlock pesoTexto = new TextBlock
+                    {
+                        Text = ruta.Peso.ToString("F1"), // Muestra el peso con un decimal.
+                        FontSize = 12,
+                        Foreground = Brushes.Red,
+                        Background = Brushes.White, // Fondo blanco para mejorar visibilidad.
+                        Padding = new Thickness(2)  // Añade algo de espacio interno al texto.
+                    };
+
+                    // Posiciona el TextBlock en el Canvas.
+                    Canvas.SetLeft(pesoTexto, pesoX - 10); // Ajusta el texto al centro del punto medio.
+                    Canvas.SetTop(pesoTexto, pesoY - 10);
+
+                    GrafoCanvas.Children.Add(pesoTexto); // Añade el TextBlock al lienzo.
                 }
             }
         }
-
 
 
         // Método que verifica que se cumple con la distancia mínima entre nodos.
